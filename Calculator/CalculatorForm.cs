@@ -110,7 +110,7 @@ namespace Calculator
                         result = firstNumber / secondNumber;
                     else
                     {
-                        displayTextBox.Text = "Error: Division by zero";
+                        displayTextBox.Text = "Error: Division by 0";
                         return;
                     }
                     break;
