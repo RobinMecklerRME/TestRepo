@@ -19,6 +19,9 @@ namespace CalculatorTest
             
             // Test UI simulation to reproduce the reported bug
             TestUISimulation();
+            
+            // Test the specific fix for decimal synchronization
+            DecimalSynchronizationTest.RunTest();
 
             Console.WriteLine("\n✅ All calculator logic tests passed!");
             Console.WriteLine("\nNote: The Windows Forms UI can only be tested on Windows systems.");
