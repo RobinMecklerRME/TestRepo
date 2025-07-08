@@ -16,6 +16,9 @@ namespace CalculatorTest
             TestDivision();
             TestDivisionByZero();
             TestDecimalOperations();
+            
+            // Test UI simulation to reproduce the reported bug
+            TestUISimulation();
 
             Console.WriteLine("\n✅ All calculator logic tests passed!");
             Console.WriteLine("\nNote: The Windows Forms UI can only be tested on Windows systems.");
@@ -83,6 +86,10 @@ namespace CalculatorTest
             
             result = PerformOperation(5.75, 1.25, "-");
             Console.WriteLine($"  5.75 - 1.25 = {result} (Expected: 4.5) {(result == 4.5 ? "✅" : "❌")}");
+            
+            // Test the specific case mentioned in the bug report
+            result = PerformOperation(0.1, 0.1, "+");
+            Console.WriteLine($"  0.1 + 0.1 = {result} (Expected: 0.2) {(Math.Abs(result - 0.2) < 0.0001 ? "✅" : "❌")}");
         }
 
         // This method simulates the calculator logic from the Windows Forms CalculatorForm
@@ -112,6 +119,82 @@ namespace CalculatorTest
             }
 
             return result;
+        }
+
+        private static void TestUISimulation()
+        {
+            Console.WriteLine("\n🖥️ Testing UI Simulation for 0.1 + 0.1:");
+            
+            var calculator = new CalculatorUISimulator();
+            
+            // Test scenario 1: User enters "0.1 + 0.1 ="
+            calculator.SimulateClearButton();
+            calculator.PrintDebugState("Initial state");
+            
+            // Enter first number: 0.1
+            calculator.SimulateNumberButton("0");
+            calculator.PrintDebugState("After pressing '0'");
+            
+            calculator.SimulateDecimalButton();
+            calculator.PrintDebugState("After pressing '.'");
+            
+            calculator.SimulateNumberButton("1");
+            calculator.PrintDebugState("After pressing '1' (first number complete: 0.1)");
+            
+            // Enter operation: +
+            calculator.SimulateOperationButton("+");
+            calculator.PrintDebugState("After pressing '+'");
+            
+            // Enter second number: 0.1
+            calculator.SimulateNumberButton("0");
+            calculator.PrintDebugState("After pressing '0' (second number)");
+            
+            calculator.SimulateDecimalButton();
+            calculator.PrintDebugState("After pressing '.' (second number)");
+            
+            calculator.SimulateNumberButton("1");
+            calculator.PrintDebugState("After pressing '1' (second number complete: 0.1)");
+            
+            // Calculate result
+            calculator.SimulateEqualsButton();
+            calculator.PrintDebugState("After pressing '=' (final result)");
+            
+            string result = calculator.DisplayText;
+            Console.WriteLine($"  Final result: {result}");
+            Console.WriteLine($"  Expected: 0.2");
+            Console.WriteLine($"  Test result: {(result == "0.2" ? "✅ PASS" : "❌ FAIL - This reproduces the bug!")}");
+            
+            // Test scenario 2: Alternative input method (starting with decimal point)
+            Console.WriteLine("\n🖥️ Testing alternative input method (.1 + .1):");
+            
+            calculator.SimulateClearButton();
+            
+            // Enter first number: .1 (without leading zero)
+            calculator.SimulateDecimalButton();
+            calculator.PrintDebugState("After pressing '.' (no leading zero)");
+            
+            calculator.SimulateNumberButton("1");
+            calculator.PrintDebugState("After pressing '1' (first number: .1)");
+            
+            // Enter operation: +
+            calculator.SimulateOperationButton("+");
+            calculator.PrintDebugState("After pressing '+'");
+            
+            // Enter second number: .1
+            calculator.SimulateDecimalButton();
+            calculator.PrintDebugState("After pressing '.' (second number, no leading zero)");
+            
+            calculator.SimulateNumberButton("1");
+            calculator.PrintDebugState("After pressing '1' (second number: .1)");
+            
+            // Calculate result
+            calculator.SimulateEqualsButton();
+            calculator.PrintDebugState("After pressing '=' (final result)");
+            
+            result = calculator.DisplayText;
+            Console.WriteLine($"  Final result: {result}");
+            Console.WriteLine($"  Expected: 0.2");
+            Console.WriteLine($"  Test result: {(result == "0.2" ? "✅ PASS" : "❌ FAIL - This reproduces the bug!")}");
         }
     }
 }
