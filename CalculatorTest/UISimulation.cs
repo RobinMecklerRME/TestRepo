@@ -1,38 +1,32 @@
 using System;
-using System.Windows.Forms;
 
-namespace Calculator
+namespace CalculatorTest
 {
-    public partial class CalculatorForm : Form
+    // This class simulates the exact UI interaction to test for the reported bug
+    public class CalculatorUISimulator
     {
+        private string displayText = "0";
         private string currentInput = "";
         private string operation = "";
         private double firstNumber = 0;
         private bool isOperationPerformed = false;
 
-        public CalculatorForm()
-        {
-            InitializeComponent();
-        }
+        public string DisplayText => displayText;
 
-        private void NumberButton_Click(object sender, EventArgs e)
+        public void SimulateNumberButton(string buttonText)
         {
-            Button btn = (Button)sender;
-            
-            if (displayTextBox.Text == "0" || isOperationPerformed)
+            if (displayText == "0" || isOperationPerformed)
             {
-                displayTextBox.Text = "";
+                displayText = "";
                 isOperationPerformed = false;
             }
             
-            displayTextBox.Text += btn.Text;
-            currentInput = displayTextBox.Text;
+            displayText += buttonText;
+            currentInput = displayText;
         }
 
-        private void OperationButton_Click(object sender, EventArgs e)
+        public void SimulateOperationButton(string operationText)
         {
-            Button btn = (Button)sender;
-            
             if (currentInput != "")
             {
                 if (operation != "" && !isOperationPerformed)
@@ -44,13 +38,29 @@ namespace Calculator
                     firstNumber = double.Parse(currentInput);
                 }
                 
-                operation = btn.Text;
+                operation = operationText;
                 isOperationPerformed = true;
                 currentInput = "";
             }
         }
 
-        private void EqualsButton_Click(object sender, EventArgs e)
+        public void SimulateDecimalButton()
+        {
+            if (isOperationPerformed)
+            {
+                displayText = "0";
+                isOperationPerformed = false;
+            }
+            
+            if (!displayText.Contains("."))
+            {
+                displayText += ".";
+            }
+            
+            currentInput = displayText;
+        }
+
+        public void SimulateEqualsButton()
         {
             if (operation != "" && currentInput != "")
             {
@@ -60,36 +70,20 @@ namespace Calculator
             }
         }
 
-        private void ClearButton_Click(object sender, EventArgs e)
+        public void SimulateClearButton()
         {
-            displayTextBox.Text = "0";
+            displayText = "0";
             currentInput = "";
             operation = "";
             firstNumber = 0;
             isOperationPerformed = false;
         }
 
-        private void DecimalButton_Click(object sender, EventArgs e)
-        {
-            if (isOperationPerformed)
-            {
-                displayTextBox.Text = "0";
-                isOperationPerformed = false;
-            }
-            
-            if (!displayTextBox.Text.Contains("."))
-            {
-                displayTextBox.Text += ".";
-            }
-            
-            currentInput = displayTextBox.Text;
-        }
-
         private void PerformCalculation()
         {
             if (!double.TryParse(currentInput, out double secondNumber))
             {
-                displayTextBox.Text = "Error";
+                displayText = "Error";
                 currentInput = "";
                 operation = "";
                 isOperationPerformed = false;
@@ -114,7 +108,7 @@ namespace Calculator
                         result = firstNumber / secondNumber;
                     else
                     {
-                        displayTextBox.Text = "Error: Division by zero";
+                        displayText = "Error: Division by zero";
                         currentInput = "";
                         operation = "";
                         isOperationPerformed = false;
@@ -125,9 +119,14 @@ namespace Calculator
                     return;
             }
 
-            displayTextBox.Text = result.ToString();
+            displayText = result.ToString();
             firstNumber = result;
             currentInput = result.ToString();
+        }
+
+        public void PrintDebugState(string step)
+        {
+            Console.WriteLine($"{step}: Display='{displayText}', CurrentInput='{currentInput}', FirstNumber={firstNumber}, Operation='{operation}', IsOperationPerformed={isOperationPerformed}");
         }
     }
 }
