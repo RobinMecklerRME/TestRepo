@@ -80,8 +80,9 @@ namespace Calculator
             if (!displayTextBox.Text.Contains("."))
             {
                 displayTextBox.Text += ".";
-                currentInput = displayTextBox.Text;
             }
+            
+            currentInput = displayTextBox.Text;
         }
 
         private void PerformCalculation()
@@ -89,6 +90,9 @@ namespace Calculator
             if (!double.TryParse(currentInput, out double secondNumber))
             {
                 displayTextBox.Text = "Error";
+                currentInput = "";
+                operation = "";
+                isOperationPerformed = false;
                 return;
             }
 
@@ -111,6 +115,9 @@ namespace Calculator
                     else
                     {
                         displayTextBox.Text = "Error: Division by zero";
+                        currentInput = "";
+                        operation = "";
+                        isOperationPerformed = false;
                         return;
                     }
                     break;

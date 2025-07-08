@@ -195,6 +195,106 @@ namespace CalculatorTest
             Console.WriteLine($"  Final result: {result}");
             Console.WriteLine($"  Expected: 0.2");
             Console.WriteLine($"  Test result: {(result == "0.2" ? "✅ PASS" : "❌ FAIL - This reproduces the bug!")}");
+            
+            // Test scenario 3: What happens if user presses decimal button multiple times?
+            Console.WriteLine("\n🖥️ Testing multiple decimal button presses:");
+            
+            calculator.SimulateClearButton();
+            
+            // Enter first number with multiple decimal attempts
+            calculator.SimulateDecimalButton();
+            calculator.PrintDebugState("After first '.'");
+            
+            calculator.SimulateDecimalButton(); // Try to add another decimal
+            calculator.PrintDebugState("After second '.' (should be ignored)");
+            
+            calculator.SimulateNumberButton("1");
+            calculator.PrintDebugState("After '1'");
+            
+            calculator.SimulateOperationButton("+");
+            calculator.PrintDebugState("After '+'");
+            
+            calculator.SimulateDecimalButton();
+            calculator.PrintDebugState("After '.' for second number");
+            
+            calculator.SimulateNumberButton("1");
+            calculator.PrintDebugState("After '1' for second number");
+            
+            calculator.SimulateEqualsButton();
+            calculator.PrintDebugState("Final result for multiple decimal test");
+            
+            result = calculator.DisplayText;
+            Console.WriteLine($"  Final result: {result}");
+            Console.WriteLine($"  Expected: 0.2");
+            Console.WriteLine($"  Test result: {(result == "0.2" ? "✅ PASS" : "❌ FAIL")}");
+            
+            // Test scenario 4: Edge case - what if currentInput gets out of sync?
+            Console.WriteLine("\n🖥️ Testing edge case - decimal button with existing decimal:");
+            
+            calculator.SimulateClearButton();
+            
+            // Manually test the scenario where decimal button is pressed when display already has decimal
+            calculator.SimulateNumberButton("0");
+            calculator.SimulateDecimalButton();
+            calculator.PrintDebugState("After 0.");
+            
+            // Press decimal button again (should be ignored but currentInput should be updated)
+            calculator.SimulateDecimalButton();
+            calculator.PrintDebugState("After pressing decimal again (should be ignored)");
+            
+            calculator.SimulateNumberButton("1");
+            calculator.PrintDebugState("After 1");
+            
+            calculator.SimulateOperationButton("+");
+            calculator.PrintDebugState("After +");
+            
+            calculator.SimulateNumberButton("0");
+            calculator.SimulateDecimalButton();
+            calculator.SimulateNumberButton("1");
+            calculator.PrintDebugState("After second 0.1");
+            
+            calculator.SimulateEqualsButton();
+            calculator.PrintDebugState("Final result for edge case test");
+            
+            result = calculator.DisplayText;
+            Console.WriteLine($"  Final result: {result}");
+            Console.WriteLine($"  Expected: 0.2");
+            Console.WriteLine($"  Test result: {(result == "0.2" ? "✅ PASS" : "❌ FAIL")}");
+            
+            // Test scenario 5: Comprehensive test of various decimal operations that could cause issues
+            Console.WriteLine("\n🖥️ Testing comprehensive decimal scenarios:");
+            
+            // Test multiple decimal calculations in sequence
+            calculator.SimulateClearButton();
+            
+            // First calculation: 0.5 + 0.3 = 0.8
+            calculator.SimulateDecimalButton();
+            calculator.SimulateNumberButton("5");
+            calculator.SimulateOperationButton("+");
+            calculator.SimulateDecimalButton();
+            calculator.SimulateNumberButton("3");
+            calculator.SimulateEqualsButton();
+            Console.WriteLine($"  0.5 + 0.3 = {calculator.DisplayText} (Expected: 0.8)");
+            
+            // Continue with the result: 0.8 + 0.1 = 0.9
+            calculator.SimulateOperationButton("+");
+            calculator.SimulateDecimalButton();
+            calculator.SimulateNumberButton("1");
+            calculator.SimulateEqualsButton();
+            Console.WriteLine($"  Previous result + 0.1 = {calculator.DisplayText} (Expected: 0.9)");
+            
+            // Now test the specific bug case: 0.1 + 0.1 starting fresh
+            calculator.SimulateClearButton();
+            calculator.SimulateDecimalButton();
+            calculator.SimulateNumberButton("1");
+            calculator.SimulateOperationButton("+");
+            calculator.SimulateDecimalButton();
+            calculator.SimulateNumberButton("1");
+            calculator.SimulateEqualsButton();
+            result = calculator.DisplayText;
+            Console.WriteLine($"  0.1 + 0.1 = {result} (Expected: 0.2) {(result == "0.2" ? "✅" : "❌")}");
+            
+            Console.WriteLine($"  Final comprehensive test: {(result == "0.2" ? "✅ PASS" : "❌ FAIL")}");
         }
     }
 }

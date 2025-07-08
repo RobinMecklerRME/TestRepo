@@ -55,8 +55,9 @@ namespace CalculatorTest
             if (!displayText.Contains("."))
             {
                 displayText += ".";
-                currentInput = displayText;
             }
+            
+            currentInput = displayText;
         }
 
         public void SimulateEqualsButton()
@@ -83,6 +84,9 @@ namespace CalculatorTest
             if (!double.TryParse(currentInput, out double secondNumber))
             {
                 displayText = "Error";
+                currentInput = "";
+                operation = "";
+                isOperationPerformed = false;
                 return;
             }
 
@@ -105,6 +109,9 @@ namespace CalculatorTest
                     else
                     {
                         displayText = "Error: Division by zero";
+                        currentInput = "";
+                        operation = "";
+                        isOperationPerformed = false;
                         return;
                     }
                     break;
